@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {Grid} from '@material-ui/core';
-import MaterialTable from 'material-table';
-import {DataTableContext} from '../data-table';
-import {Promise} from 'q';
-import DeviceForm from './device-form';
+
+import {Tabs,Tab} from '@material-ui/core'
+import TabPanel from './tab-panel'
 
 class DevicePage extends Component {
   constructor (props) {
@@ -17,10 +15,23 @@ class DevicePage extends Component {
         {title: 'Reg No', field: 'registration_number'},
         {title: 'Center Number', field: 'center_number'},
       ],
+      value:0
     };
   }
 
-  componentDidMount () {
+  handleTabChange= (e,value)=>{
+    this.setState({value:value})
+  }
+
+
+  a11yProps = (index)=>{
+      return {
+          id: 'simple-tab-$'+index,
+          'aria-controls': 'simple-tabpanel-$'+index,
+        };
+  }
+
+  componentDidMount (){
     axios
       .get ('http://118.67.215.190:8880/api/devices')
       .then (response => this.setState ({devices: response.data}))
@@ -65,68 +76,51 @@ class DevicePage extends Component {
       .catch (err => resolve ());
   };
 
-  handleClose = () => {
-    this.setState ({open: false});
-  };
+  
 
   handleSubmit = newData => {
     let devices = this.state.devices;
     devices.push (newData);
     this.setState ({devices, devices});
-    this.handleClose ();
   };
 
-  openDialog = () => {
-    this.setState ({open: true});
-  };
+  
 
   render () {
     return (
-      <Grid container justify="center">
-        <Grid item md={10} style={{padding: 20}}>
+      <div>
+        <Tabs value={this.state.value} onChange={this.handleTabChange} aria-label="simple tabs example" indicatorColor="primary"
+        textColor="primary" centered>
+        <Tab label="ALL" {...this.a11yProps(0)} />
+        <Tab label="ASSIGNED" {...this.a11yProps(1)} />
+        <Tab label="UN-ASSIGNED" {...this.a11yProps(2)} />
+      </Tabs> 
 
-          <DataTableContext.Consumer>
-            {icons => (
-              <MaterialTable
-                title="Device List"
-                icons={icons}
-                columns={this.state.columns}
-                data={this.state.devices}
-                options={{actionsColumnIndex: -1}}
-                actions={[
-                  {
-                    icon: icons.Add,
-                    tooltip: 'Add User',
-                    isFreeAction: true,
-                    onClick: event => this.openDialog (),
-                  },
-                ]}
-                editable={{
-                  onRowUpdate: (newData, oldData) => {
-                    return new Promise (resolve => {
-                      this.updateDevice (newData, oldData, resolve);
-                    });
-                  },
-                  onRowDelete: oldData => {
-                    return new Promise (resolve => {
-                      this.deleteDevice (oldData, resolve);
-                    });
-                  },
-                }}
-              />
-            )}
-          </DataTableContext.Consumer>
+        <TabPanel value={this.state.value} index={0} 
+          data={this.state.devices} 
+          updateDevice={this.updateDevice}
+          deleteDevice={this.deleteDevice}
+          handleSubmit={this.handleSubmit}>
+          All
+        </TabPanel>
 
-        </Grid>
-
-        <DeviceForm
-          open={this.state.open}
-          handleClose={this.handleClose}
+        <TabPanel value={this.state.value} index={1} 
+        data={this.state.devices.filter(device=>device.uid!=null)}
+        updateDevice={this.updateDevice}
+        deleteDevice={this.deleteDevice}
+        handleSubmit={this.handleSubmit}>
+          ASSIGNED
+        </TabPanel>
+        <TabPanel value={this.state.value} index={2} 
+          data={this.state.devices.filter(device=>device.uid==null)}
+          updateDevice={this.updateDevice}
+          deleteDevice={this.deleteDevice}
           handleSubmit={this.handleSubmit}
-        />
-
-      </Grid>
-    );
+        >
+          UN-ASSIGNED
+        </TabPanel>
+        </div>
+    )
   }
 }
 
