@@ -13,17 +13,20 @@ import {
 import axios from 'axios';
 import {Promise} from 'q';
 
+
+const initialState = {
+  imei: '',
+  registration_number: '',
+  device_sim_number: '',
+  center_number: '',
+  device_model: 'GT06',
+  vehicle_type: 0,
+}
+
 class DeviceForm extends Component {
   constructor (props) {
     super (props);
-    this.state = {
-      imei: '',
-      registration_number: '',
-      device_sim_number: '',
-      center_number: '',
-      device_model: 'GT06',
-      vehicle_type: 0,
-    };
+    this.state = {...initialState};
   }
 
   handleChange = event => {
@@ -31,13 +34,14 @@ class DeviceForm extends Component {
   };
 
   handleSubmit = e => {
-    axios
-      .post ('http://118.67.215.190:8880/api/devices', this.state)
-      .then (response => {
-        console.log (response.data);
-        this.props.handleSubmit (response.data);
-      })
-      .catch (err => console.log (err));
+    this.props.handleSubmit(this.state)
+    // axios
+    //   .post ('http://118.67.215.190:8880/api/devices', this.state)
+    //   .then (response => {
+    //     this.props.handleSubmit (this.state);
+    //     this.setState({...initialState})
+    //   })
+    //   .catch (err => console.log (err));
   };
   render () {
     const {open, handleClose} = this.props;

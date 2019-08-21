@@ -8,6 +8,6 @@ const AdminPage = () => {
 }
 
 const condition = authUser =>
-  authUser && authUser.email ==='sohel@gmail.com';
+  authUser && authUser.email ==='sohel.ahmed2178@gmail.com';
  
 export default withAuthorization(condition)(AdminPage);

@@ -16,7 +16,6 @@ import DevicePage from './components/devices';
 import {tableIcons, DataTableContext} from './components/data-table';
 
 const App = props => {
-  console.log ('HHHH', props.user);
 
   return (
     <DataTableContext.Provider value={tableIcons}>

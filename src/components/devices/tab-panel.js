@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {DataTableContext} from '../data-table';
 import MaterialTable from 'material-table';
 import DeviceForm from './device-form';
+import UserDialog from './user-dialog';
 
 
 class TabPanel extends Component {
@@ -12,6 +13,8 @@ class TabPanel extends Component {
           super(props);
           this.state = {  
               open:false,
+              userDialogOpen:false,
+              device:null,
             columns : [
                 {title: 'IMEI', field: 'imei'},
                 {title: 'Reg No', field: 'registration_number'},
@@ -24,13 +27,33 @@ class TabPanel extends Component {
         this.setState ({open: true});
       };
 
+      openUserDialog = (rawData)=>{
+        this.setState({userDialogOpen:true,device:rawData})
+      }
+
+      assignDevice = (rawData)=>{
+        this.props.assignDevice(rawData)
+      }
+
+      unAssignDevice=(rawData)=>{
+        this.props.unAssignDevice(rawData)
+      }
+
       handleClose = () => {
         this.setState ({open: false});
       };
 
+      handleUserDialogClose = ()=>{
+        this.setState({userDialogOpen:false})
+      }
+
       handleSubmit =(newData)=>{
-          this.props.handleSubmit(newData);
-          this.handleClose()
+          this.props.handleSubmit(newData,this.handleClose);
+      }
+
+      itemClick = (user)=>{
+        let data = {uid:user._id,imei:this.state.device.imei}
+        this.props.assignDevice(this.state.device,data,this.handleUserDialogClose)
       }
 
       render() { 
@@ -64,6 +87,22 @@ class TabPanel extends Component {
                         isFreeAction: true,
                         onClick: event => this.openDialog (),
                       },
+                      rawData=>(
+                        {
+                          icon:icons.AttachFile,
+                          tooltip:'Assign Device',
+                          onClick: event=>this.openUserDialog(rawData),
+                          disabled:rawData.uid!=null
+                        }
+                      ),
+                      rawData=>(
+                        {
+                          icon:icons.Clear,
+                          tooltip:'UN-Assign Device',
+                          onClick: event=>this.unAssignDevice(rawData),
+                          disabled:rawData.uid==null
+                        }
+                      )
                     ]}
                     editable={{
                       onRowUpdate: (newData, oldData) => {
@@ -88,6 +127,11 @@ class TabPanel extends Component {
               handleClose={this.handleClose}
               handleSubmit={this.handleSubmit}
             />
+
+            <UserDialog
+              userDialogOpen={this.state.userDialogOpen}
+              handleUserDialogClose={this.handleUserDialogClose}
+              itemClick ={this.itemClick}/>
     
           </Grid>
          

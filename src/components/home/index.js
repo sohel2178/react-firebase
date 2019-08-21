@@ -5,6 +5,9 @@ import MatrialTable from 'material-table';
 import {DataTableContext} from '../data-table';
 import {Grid} from '@material-ui/core';
 
+import {connect} from 'react-redux'
+import {fetchAllUsers,updateUser} from '../../actions'
+
 class HomePage extends Component {
   constructor (props) {
     super (props);
@@ -15,36 +18,20 @@ class HomePage extends Component {
         {title: 'Contact', field: 'contact'},
         {title: 'Address', field: 'address'},
         {title: 'Organization', field: 'organization_name'},
-      ],
-      users: [],
+      ]
     };
   }
 
   componentDidMount () {
-    console.log (this.props.user);
-    axios.get ('http://118.67.215.190:8880/api/users').then (response => {
-      let users = response.data;
-      //console.log(users)
-      this.setState ({users: users});
-    });
+    console.log("Sohel Test",this.props)
+
+    if(this.props.users.length===0){
+      this.props.getUsers();
+    }
   }
 
   updateUser = (newData, oldData, resolve) => {
-    console.log (newData);
-    let id = newData._id;
-    axios
-      .put ('http://118.67.215.190:8880/api/users/' + id, newData)
-      .then (response => {
-        console.log (response.data);
-        let users = [...this.state.users];
-        users[users.indexOf (oldData)] = newData;
-        this.setState ({...this.state, users});
-        resolve ();
-      })
-      .catch (err => {
-        console.log (err);
-        resolve ();
-      });
+    this.props.updateUser(newData,oldData,resolve)
   };
 
   render () {
@@ -57,7 +44,7 @@ class HomePage extends Component {
                 icons={tableIcons}
                 title="User List"
                 columns={this.state.columns}
-                data={this.state.users}
+                data={this.props.users}
                 options={{actionsColumnIndex: -1}}
                 editable={{
                   onRowUpdate: (newData, oldData) => {
@@ -78,4 +65,17 @@ class HomePage extends Component {
 
 const condition = authUser => authUser != null;
 
-export default withAuthorization (condition) (HomePage);
+const mapStateToProps = (state)=>{
+  return {
+    ...state
+  }
+}
+
+const mapDispatchToProps = (dispatch)=>{
+  return {
+    getUsers:()=>dispatch(fetchAllUsers()),
+    updateUser:(newData, oldData, resolve)=>dispatch(updateUser(newData,oldData,resolve))
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withAuthorization (condition) (HomePage));

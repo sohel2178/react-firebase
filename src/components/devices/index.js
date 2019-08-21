@@ -3,13 +3,15 @@ import axios from 'axios';
 
 import {Tabs,Tab} from '@material-ui/core'
 import TabPanel from './tab-panel'
+import {connect} from 'react-redux'
+
+import {fetchAllDevices,updateDevice,deleteDevice,addDevice,assignDevice,unAssignDevice} from '../../actions'
 
 class DevicePage extends Component {
   constructor (props) {
     super (props);
     this.state = {
       open: false,
-      devices: [],
       columns: [
         {title: 'IMEI', field: 'imei'},
         {title: 'Reg No', field: 'registration_number'},
@@ -32,59 +34,18 @@ class DevicePage extends Component {
   }
 
   componentDidMount (){
-    axios
-      .get ('http://118.67.215.190:8880/api/devices')
-      .then (response => this.setState ({devices: response.data}))
-      .catch (err => console.log (err));
+    if(this.props.devices.length===0){
+      this.props.getAllDevices();
+    }
   }
 
-  updateDevice = (newData, oldData, resolve) => {
-    let imei = newData.imei;
+  assignDevice = (oldData,data,resolve)=>{
+    this.props.assignDevice(oldData,data,resolve)
+  }
 
-    axios
-      .put ('http://118.67.215.190:8880/api/devices/' + imei, newData)
-      .then (response => {
-        let devices = [...this.state.devices];
-        devices[devices.indexOf (oldData)] = newData;
-        this.setState ({...this.state, devices});
-        resolve ();
-      })
-      .catch (err => resolve ());
-  };
-
-  deleteDevice = (oldData, resolve) => {
-    axios
-      .delete ('http://118.67.215.190:8880/api/devices/' + oldData.imei)
-      .then (response => {
-        let devices = [...this.state.devices].filter (
-          value => value.imei !== oldData.imei
-        );
-        this.setState ({...this.state, devices});
-        resolve ();
-      })
-      .catch (err => resolve ());
-  };
-
-  addDevice = (newData, resolve) => {
-    axios
-      .post ("'http://118.67.215.190:8880/api/devices", newData)
-      .then (response => {
-        let devices = [...this.state.devices].push (newData);
-        this.setState ({...this.state, devices});
-        resolve ();
-      })
-      .catch (err => resolve ());
-  };
-
-  
-
-  handleSubmit = newData => {
-    let devices = this.state.devices;
-    devices.push (newData);
-    this.setState ({devices, devices});
-  };
-
-  
+  unAssignDevice = (device)=>{
+    this.props.unAssignDevice(device);
+  }
 
   render () {
     return (
@@ -97,25 +58,31 @@ class DevicePage extends Component {
       </Tabs> 
 
         <TabPanel value={this.state.value} index={0} 
-          data={this.state.devices} 
-          updateDevice={this.updateDevice}
-          deleteDevice={this.deleteDevice}
-          handleSubmit={this.handleSubmit}>
+          data={this.props.devices} 
+          updateDevice={this.props.updateDevice}
+          deleteDevice={this.props.deleteDevice}
+          handleSubmit={this.props.addDevice}
+          assignDevice={ this.props.assignDevice}
+          unAssignDevice={this.props.unAssignDevice}>
           All
         </TabPanel>
 
         <TabPanel value={this.state.value} index={1} 
-        data={this.state.devices.filter(device=>device.uid!=null)}
-        updateDevice={this.updateDevice}
-        deleteDevice={this.deleteDevice}
-        handleSubmit={this.handleSubmit}>
+        data={this.props.devices.filter(device=>device.uid!=null)}
+        updateDevice={this.props.updateDevice}
+        deleteDevice={this.props.deleteDevice}
+        handleSubmit={this.props.addDevice}
+        assignDevice={ this.props.assignDevice}
+          unAssignDevice={this.props.unAssignDevice}>
           ASSIGNED
         </TabPanel>
         <TabPanel value={this.state.value} index={2} 
-          data={this.state.devices.filter(device=>device.uid==null)}
-          updateDevice={this.updateDevice}
-          deleteDevice={this.deleteDevice}
-          handleSubmit={this.handleSubmit}
+          data={this.props.devices.filter(device=>device.uid==null)}
+          updateDevice={this.props.updateDevice}
+          deleteDevice={this.props.deleteDevice}
+          handleSubmit={this.props.addDevice}
+          assignDevice={ this.props.assignDevice}
+          unAssignDevice={this.props.unAssignDevice}
         >
           UN-ASSIGNED
         </TabPanel>
@@ -124,4 +91,21 @@ class DevicePage extends Component {
   }
 }
 
-export default DevicePage;
+const mapStateToProps = (state)=>{
+  return {
+    ...state
+  }
+}
+
+const mapDispatchToProps = (dispatch)=>{
+  return{
+    getAllDevices:()=>dispatch(fetchAllDevices()),
+    updateDevice:(newData, oldData, resolve)=>dispatch(updateDevice(newData, oldData, resolve)),
+    deleteDevice:(oldData,resolve)=>dispatch(deleteDevice(oldData,resolve)),
+    addDevice:(newData,resolve)=>dispatch(addDevice(newData,resolve)),
+    assignDevice:(oldData,data,resolve)=>dispatch(assignDevice(oldData,data,resolve)),
+    unAssignDevice:(device)=> dispatch(unAssignDevice(device))
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(DevicePage);
