@@ -1,4 +1,4 @@
-import {FETCH_USERS,UPDATE_USER,FETCH_DEVICES,ADD_DEVICE,UPDATE_DEVICE,DELETE_DEVICE,ASSIGN_DEVICE,UNASSIGN_DEVICE} from './types'
+import {FETCH_USERS,UPDATE_USER,FETCH_DEVICES,ADD_DEVICE,UPDATE_DEVICE,DELETE_DEVICE,ASSIGN_DEVICE,UNASSIGN_DEVICE, GET_USER} from './types'
 import axios from 'axios'
 
 const baseUrl = 'http://118.67.215.190:8880/api/'
@@ -23,6 +23,10 @@ const addDeviceAction = (data)=>{
     return{type:ADD_DEVICE,payload:data}
 }
 
+const getUserAction=(user)=>{
+    return {type:GET_USER,payload:user}
+}
+
 
 const updateDeviceAction = (newData,oldData)=>{
     return {type:UPDATE_DEVICE,payload:{newData:newData,oldData:oldData}}
@@ -45,6 +49,19 @@ export const fetchAllUsers = ()=>{
         return axios.get(usersUrl)
             .then(response=>{
                 dispatch(fetchUsersAction(response.data))
+            })
+            .catch(err=>{
+                throw(err)
+            })
+    }
+}
+
+
+export const getUser = (email)=>{
+    return (dispatch)=>{
+        return axios.get(usersUrl+email)
+            .then(response=>{
+                dispatch(getUserAction(response.data))
             })
             .catch(err=>{
                 throw(err)

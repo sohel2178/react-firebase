@@ -17,13 +17,17 @@ import {tableIcons, DataTableContext} from './components/data-table';
 
 const App = props => {
 
+  
+
   return (
     <DataTableContext.Provider value={tableIcons}>
       <Router>
         <div>
           <Navigation user={props.user} />
 
-          <Route exact path={ROUTES.LANDING} component={LangingPage} />
+          <Route exact path={ROUTES.LANDING}
+            render={()=><LangingPage firebase={props.firebase} user={props.user}/>}
+            />
           <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
           <Route path={ROUTES.SIGN_IN} component={LoginPage} />
           <Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />

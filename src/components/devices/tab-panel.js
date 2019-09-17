@@ -31,13 +31,7 @@ class TabPanel extends Component {
         this.setState({userDialogOpen:true,device:rawData})
       }
 
-      assignDevice = (rawData)=>{
-        this.props.assignDevice(rawData)
-      }
-
-      unAssignDevice=(rawData)=>{
-        this.props.unAssignDevice(rawData)
-      }
+     
 
       handleClose = () => {
         this.setState ({open: false});
@@ -99,7 +93,7 @@ class TabPanel extends Component {
                         {
                           icon:icons.Clear,
                           tooltip:'UN-Assign Device',
-                          onClick: event=>this.unAssignDevice(rawData),
+                          onClick: event=>this.props.unAssignDevice(rawData),
                           disabled:rawData.uid==null
                         }
                       )
@@ -141,17 +135,6 @@ class TabPanel extends Component {
   }
    
 
-
-
-// const TabPanel = (props) => {
-    
-//     console.log(data)
-//     return ( 
-        
-
-
-//       );
-// }
 
 TabPanel.propTypes = {
     children: PropTypes.node,

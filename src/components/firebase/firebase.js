@@ -15,6 +15,7 @@ const firebaseConfig = {
       constructor(){
           app.initializeApp(firebaseConfig);
           this.auth = app.auth()
+          this.db = app.database()
       }
 
       createUserWithEmailAndPassword = (email,password)=>{
@@ -32,6 +33,10 @@ const firebaseConfig = {
       doPasswordUpdate = password =>{
         return  this.auth.currentUser.updatePassword(password);
       }
+
+      currentUser = ()=>this.auth.currentUser;
+
+      devices = (uid)=> this.db.ref("devices").orderByChild('uid').equalTo(uid)
        
   }
 

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -8,33 +8,30 @@ import {
   DialogActions,
   Button,
   Select,
-  InputLabel,
-} from '@material-ui/core';
-import axios from 'axios';
-import {Promise} from 'q';
-
+  InputLabel
+} from "@material-ui/core";
 
 const initialState = {
-  imei: '',
-  registration_number: '',
-  device_sim_number: '',
-  center_number: '',
-  device_model: 'GT06',
-  vehicle_type: 0,
-}
+  imei: "",
+  registration_number: "",
+  device_sim_number: "",
+  center_number: "",
+  device_model: "GT06",
+  vehicle_type: 0
+};
 
 class DeviceForm extends Component {
-  constructor (props) {
-    super (props);
-    this.state = {...initialState};
+  constructor(props) {
+    super(props);
+    this.state = { ...initialState };
   }
 
   handleChange = event => {
-    this.setState ({[event.target.name]: event.target.value});
+    this.setState({ [event.target.name]: event.target.value });
   };
 
   handleSubmit = e => {
-    this.props.handleSubmit(this.state)
+    this.props.handleSubmit(this.state);
     // axios
     //   .post ('http://118.67.215.190:8880/api/devices', this.state)
     //   .then (response => {
@@ -43,8 +40,8 @@ class DeviceForm extends Component {
     //   })
     //   .catch (err => console.log (err));
   };
-  render () {
-    const {open, handleClose} = this.props;
+  render() {
+    const { open, handleClose } = this.props;
     return (
       <Dialog
         open={open}
@@ -98,48 +95,45 @@ class DeviceForm extends Component {
             fullWidth
           />
 
-          <InputLabel htmlFor="device_model" style={{marginTop: 16}}>
+          <InputLabel htmlFor="device_model" style={{ marginTop: 16 }}>
             Device Model
           </InputLabel>
           <Select
-            style={{marginTop: 10}}
+            style={{ marginTop: 10 }}
             native
             value={this.state.device_model}
             onChange={this.handleChange}
             inputProps={{
-              name: 'device_model',
-              id: 'device_model',
+              name: "device_model",
+              id: "device_model"
             }}
             fullWidth
           >
-
-            <option value={'GT06'}>GT06</option>
-            <option value={'WeTrack Two'}>WeTrack Two</option>
-            <option value={'SinoTrack'}>SinoTrack</option>
+            <option value={"GT06"}>GT06</option>
+            <option value={"WeTrack Two"}>WeTrack Two</option>
+            <option value={"SinoTrack"}>SinoTrack</option>
           </Select>
 
-          <InputLabel htmlFor="vehicle_type" style={{marginTop: 16}}>
+          <InputLabel htmlFor="vehicle_type" style={{ marginTop: 16 }}>
             Vehicle Type
           </InputLabel>
           <Select
-            style={{marginTop: 10}}
+            style={{ marginTop: 10 }}
             native
             value={this.state.vehicle_type}
             onChange={this.handleChange}
             inputProps={{
-              name: 'vehicle_type',
-              id: 'vehicle_type',
+              name: "vehicle_type",
+              id: "vehicle_type"
             }}
             fullWidth
           >
-
             <option value={0}>Car</option>
             <option value={1}>Bike</option>
             <option value={2}>Bus</option>
             <option value={3}>Truck</option>
             <option value={4}>CNG</option>
           </Select>
-
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">

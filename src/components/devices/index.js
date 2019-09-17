@@ -39,13 +39,7 @@ class DevicePage extends Component {
     }
   }
 
-  assignDevice = (oldData,data,resolve)=>{
-    this.props.assignDevice(oldData,data,resolve)
-  }
 
-  unAssignDevice = (device)=>{
-    this.props.unAssignDevice(device);
-  }
 
   render () {
     return (
