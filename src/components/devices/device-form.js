@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 
 const initialState = {
-  imei: "",
+  id: "",
   registration_number: "",
   device_sim_number: "",
   center_number: "",
@@ -57,9 +57,9 @@ class DeviceForm extends Component {
           <TextField
             autoFocus
             margin="dense"
-            name="imei"
+            name="id"
             value={this.state.imei}
-            label="IMEI"
+            label="ID"
             type="text"
             onChange={this.handleChange}
             fullWidth
